@@ -1,1 +1,1 @@
-# game-ai-bonn-ss18
+# Game AI lecture projects, Summer Semester 2018, University of Bonn
