@@ -16,7 +16,7 @@ class Connect4:
         self.kmoves[row] += 1
 
     def possible_moves(self):
-        return np.where(self.kmoves != self.cap)
+        return np.where(self.kmoves != self.cap)[0]
         
     def print_board(self):
         B = np.copy(self.gameState).astype(object)
@@ -24,13 +24,35 @@ class Connect4:
             B[B==n] = self.symbols[n]
         print B
 
+    def evaluate(self):
+        return False
+        # TODO 
+        
+    def play(players):
+        player = 1
+        mvcounter = 1
+
+        noWinnerYet = True
+        
+        while len(self.possible_moves()) != 0 and noWinnerYet:
+            move = players[1 if player == 1 else 0].next()
+            self.move_at(move, player)
+            noWinnerYet = self.evaluate()
+            player *= -1
+            mvcounter += 1
 
 game = Connect4();
+
+class RandomPlayer:
+    def next(self, game):
+        return np.random.choice(game.possible_moves(), 1)[0]
+
 game.move_at(1, 1)
 game.move_at(1, 1)
 game.move_at(1, 1)
 game.move_at(2, -1)
 game.move_at(2, 1)
 game.print_board();
+
 # # def move_random(gameState, player):
 # #     xs, ys = np.
