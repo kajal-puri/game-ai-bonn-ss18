@@ -9,29 +9,47 @@ mass_distrib = np.array(np.loadtxt(PROB_MASS_FILE)).reshape(3, 3)
 def move_still_possible(S):
     return not (S[S==0].size == 0)
 
+def plot_scores(scores):
+    x = np.arange(3)
+    plt.bar(x, scores)
+    plt.title('Game Scores');
+    plt.xticks(x, ('X wins', 'O wins', 'Draw'))
+    
+
 def plot_confusion_matrix(cm):
     plt.imshow(cm, interpolation='nearest', cmap=plt.cm.Blues)
-    plt.title('confusion matrix');
+    plt.title('Density Grid- Random movement');
     plt.colorbar()
-    plt.yticks(np.arange(3), ['0', '1', '2'], rotation=90)
-    plt.xticks(np.arange(3), ['0', '1', '2'])
+    plt.yticks(np.arange(3), ['1', '2', '3'], rotation=90)
+    plt.xticks(np.arange(3), ['1', '2', '3'])
 
-    fmt = '.4f' if normalize else 'd'
-thresh = cm.max() / 2.
+    fmt = '.4f'
+    thresh = cm.max() / 2.
+
     for i, j in itertools.product(range(cm.shape[0]), range(cm.shape[1])):
         plt.text(j, i, format(cm[i, j], fmt),
                  horizontalalignment="center",
                  color="white" if cm[i, j] > thresh else "black")
 
     plt.tight_layout()
-    plt.ylabel('True label')
-    plt.xlabel('Predicted label')
+    plt.ylabel('Y axis')
+    plt.xlabel('X axis')
 
-def normalize(arr):
+def normalize(a):
+    arr = np.copy(a).astype(float)
     # return arr / np.linalg.norm(arr)
     sum = np.sum(arr)
     arr /= sum
     return arr;
+
+def move_based_on_max_prob_mass(S, p):
+    copyGameState = np.copy(S).astype(object)
+    copyProb = np.copy(mass_distrib).astype(object)
+    copyProb[copyGameState != 0] = 0 
+    maximumProb = copyProb.max()
+    xs, ys = np.where(copyProb == maximumProb)
+    S[xs[0],ys[0]] = p
+    return S
 
 def move_based_on_prob_mass(S, p):
     xs, ys = np.where(S == 0)
@@ -67,7 +85,7 @@ def print_game_state(S):
     B = np.copy(S).astype(object)
     for n in [-1, 0, 1]:
         B[B==n] = symbols[n]
-    print B
+        print B
 
 def run_game(first_player_strategy, second_player_strategy):
     # initialize 3x3 tic tac toe board
@@ -104,7 +122,7 @@ def run_game(first_player_strategy, second_player_strategy):
         
     if noWinnerYet:
         return gameState, 0
-        print 'game ended in a draw'
+    print 'game ended in a draw'
 
 # calculate the probability mass function 
 def calc_prob_mass(agg):
@@ -116,7 +134,7 @@ def simulate(times = 10):
     count_random = 0
     
     for i in range(times):
-        gameState, player = run_game(move_at_random, move_based_on_prob_mass)
+        gameState, player = run_game(move_at_random, move_based_on_max_prob_mass)
         scores += np.array((player == 1, player == -1, player == 0), dtype=int)
         if player != 0:
             aggregate = np.add(aggregate, np.clip(gameState * player, 0, 1))
@@ -135,7 +153,8 @@ if __name__ == '__main__':
     # print '%d games had winner.' % scores
     norm = normalize(agg)
     plt.figure('1')
-    plot_confusion_matrix(norm)
+    plot_scores(normalize(scores))
     plt.figure('2')
-    plot_confusion_matrix(agg)
+    plot_confusion_matrix(norm)
     plt.show()
+        
