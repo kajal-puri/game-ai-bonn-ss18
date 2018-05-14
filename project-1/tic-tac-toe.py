@@ -1,4 +1,6 @@
 import numpy as np
+import itertools
+import matplotlib.pyplot as plt
 
 PROB_MASS_FILE = 'prob_mass'
 # load prob_mass
@@ -6,6 +8,24 @@ mass_distrib = np.array(np.loadtxt(PROB_MASS_FILE)).reshape(3, 3)
 
 def move_still_possible(S):
     return not (S[S==0].size == 0)
+
+def plot_confusion_matrix(cm):
+    plt.imshow(cm, interpolation='nearest', cmap=plt.cm.Blues)
+    plt.title('confusion matrix');
+    plt.colorbar()
+    plt.yticks(np.arange(3), ['0', '1', '2'], rotation=90)
+    plt.xticks(np.arange(3), ['0', '1', '2'])
+
+    fmt = '.4f' if normalize else 'd'
+thresh = cm.max() / 2.
+    for i, j in itertools.product(range(cm.shape[0]), range(cm.shape[1])):
+        plt.text(j, i, format(cm[i, j], fmt),
+                 horizontalalignment="center",
+                 color="white" if cm[i, j] > thresh else "black")
+
+    plt.tight_layout()
+    plt.ylabel('True label')
+    plt.xlabel('Predicted label')
 
 def normalize(arr):
     # return arr / np.linalg.norm(arr)
@@ -113,4 +133,9 @@ if __name__ == '__main__':
     # np.random.choice(9, 1, p=prob_mass)[0]
     
     # print '%d games had winner.' % scores
-    print agg
+    norm = normalize(agg)
+    plt.figure('1')
+    plot_confusion_matrix(norm)
+    plt.figure('2')
+    plot_confusion_matrix(agg)
+    plt.show()
