@@ -21,7 +21,7 @@ class Connect4:
         B = np.copy(self.state).astype(object)
         for n in [-1, 0, 1]:
             B[B==n] = self.symbols[n]
-        print B
+        print B.T
 
     def eval(self, player):
         boundX, boundY = self.state.shape
