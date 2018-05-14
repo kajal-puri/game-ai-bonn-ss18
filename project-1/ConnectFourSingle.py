@@ -1,13 +1,11 @@
-
+import itertools
+import matplotlib.pyplot as plt
 import numpy as np
 import random
-
-
 
 HIGHT = 6
 WIDTH = 7
 WINNING_NUMBER = 4
-
 
 def move_still_possible(S):
     return not (S[S==0].size == 0)
@@ -22,7 +20,7 @@ def move_at_random(S, p):
 
     # Find the lowest entry (in terms of the board) of the random column,
     # s.t. this entry is still free.
-    rowIdx = np.argmax(np.where(S.T[randomColumnIdx]==0))
+    rowIdx = np.argmax(np.where(S. T[randomColumnIdx]==0))
 
     # Insert the player's token into the board.
     S[rowIdx,randomColumnIdx] = p
@@ -120,10 +118,18 @@ def print_game_state(S):
         B[B==n] = symbols[n]
     print (B)
 
+# if __name__ == '__main__':
+aggregate = np.zeros((6, 7), dtype=float)
 
 
+def normalize(arr):
+    # return arr / np.linalg.norm(arr)
+    sum = np.sum(arr.flatten())
+    arr /= sum
+    return arr;
 
-if __name__ == '__main__':
+def run_game():
+    global aggregate
     # initialize 6x7 connect four board
     gameState = np.zeros((HIGHT,WIDTH), dtype=int)
 
@@ -133,7 +139,6 @@ if __name__ == '__main__':
 
     # initialize flag that indicates win
     noWinnerYet = True
-    
 
     while move_still_possible(gameState) and noWinnerYet:
         # get player symbol
@@ -144,18 +149,53 @@ if __name__ == '__main__':
         gameState, lastMoveRow, lastMoveCol = move_at_random(gameState, player)
 
         # print current game state
-        print_game_state(gameState)
+        # print_game_state(gameState)
         
         # evaluate game state
         if move_was_winning_move(gameState, player, lastMoveRow, lastMoveCol):
-            print ('player %s wins after %d moves' % (name, mvcntr))
+            # print ('player %s wins after %d moves' % (name, mvcntr))
             noWinnerYet = False
+            break;
 
         # switch player and increase move counter
         player *= -1
         mvcntr +=  1
+    if (noWinnerYet == False):
+        # print 'player', player
+        # print 'gameState', gameState
+        # print 'clipped', np.clip(gameState * player, 0, 1)
+        aggregate = np.add(aggregate, np.clip(gameState * player, 0, 1))
+    # if noWinnerYet:
+    #     print ('game ended in a draw') 
+
+for i in range(10000):
+    run_game()
+
+np.set_printoptions(formatter={'float': lambda x: "{0:0.4f}".format(x)})
 
 
+def plot_confusion_matrix(cm):
+    plt.imshow(cm, interpolation='nearest', cmap=plt.cm.Blues)
+    plt.title('confusion matrix');
+    plt.colorbar()
+    plt.yticks(np.arange(6), ['0', '1', '2', '3', '4', '5', '6'], rotation=90)
+    plt.xticks(np.arange(7), ['0', '1', '2', '3', '4', '5', '6', '7'])
 
-    if noWinnerYet:
-        print ('game ended in a draw') 
+    fmt = '.4f' if normalize else 'd'
+    thresh = cm.max() / 2.
+    for i, j in itertools.product(range(cm.shape[0]), range(cm.shape[1])):
+        plt.text(j, i, format(cm[i, j], fmt),
+                 horizontalalignment="center",
+                 color="white" if cm[i, j] > thresh else "black")
+
+    plt.tight_layout()
+    plt.ylabel('True label')
+    plt.xlabel('Predicted label')
+
+    
+    
+print aggregate
+norm = normalize(aggregate)
+
+plot_confusion_matrix(norm)
+plt.show();
