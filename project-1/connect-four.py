@@ -1,13 +1,11 @@
 import itertools
 import matplotlib.pyplot as plt
 import numpy as np
-import matplotlib.pyplot as plt
 import random
 
 HIGHT = 6
 WIDTH = 7
 WINNING_NUMBER = 4
-GAMES_COUNT = 1000
 
 def move_still_possible(S):
     return not (S[S==0].size == 0)
@@ -130,7 +128,8 @@ def normalize(arr):
     arr /= sum
     return arr;
 
-def play_game():
+def run_game():
+    global aggregate
     # initialize 6x7 connect four board
     gameState = np.zeros((HIGHT,WIDTH), dtype=int)
 
@@ -198,30 +197,5 @@ def plot_confusion_matrix(cm):
 print aggregate
 norm = normalize(aggregate)
 
-
-    if noWinnerYet:
-        print ('game ended in a draw') 
-    return noWinnerYet, player * -1
-
-
-
-if __name__ == '__main__':
-    counter = {-1: 0, 0: 0, 1: 0}
-    for i in range(GAMES_COUNT):
-        draw, winner = play_game()
-        if draw:
-            counter[0] += 1
-        else:
-            counter[winner] += 1
-    print counter
-
-    ## Results Plot
-    x = np.arange(3)
-    x_heights = [counter[-1], counter[0], counter[1]]
-    x_labels = ('Player O wins', 'Draw', 'Player X wins')
-    plt.bar(x, x_heights)
-    plt.xticks(x, x_labels)
-    plt.ylabel('Number of games')
-    plt.title('Random move in Connect Four')
-    plt.grid(True, axis='y')
-    plt.show()
+plot_confusion_matrix(norm)
+plt.show();
