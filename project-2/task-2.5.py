@@ -14,9 +14,23 @@ if __name__ == '__main__':
         if mat[ix, iy] == 1:
             walls.append((ix, iy))
     walls = dict([(n, n) for n in walls])
+    fig = plt.figure('1')
+    plt.axis('equal')
 
+    fig.patch.set_facecolor('beige')
     g.remove_nodes_from(walls)
     
-    nx.draw_networkx(g, pos=pos, node_size=10, with_labels=False)
+    nodes = nx.draw_networkx_nodes(g, pos=pos, node_size=30, with_labels=False, node_color='w')
+    edges = nx.draw_networkx_edges(g, pos=pos, node_size=30, with_labels=False, edge_color='r')
+    nodes.set_edgecolor('black')
+    
+    s = (10, 1)[::-1]
+    v = (4, 15)[::-1]
+    path = nx.dijkstra_path(g, s, v)
+    path_edges = zip(path,path[1:])
+
+    nx.draw_networkx_nodes(g, pos, nodelist=[s], node_color='steelblue', node_size=80)
+    nx.draw_networkx_nodes(g, pos, nodelist=[v], node_color='orangered', node_size=80)
+    nx.draw_networkx_edges(g, pos, edgelist=path_edges, edge_color='mediumaquamarine', width=5)
     plt.axis('off')
     plt.show()
