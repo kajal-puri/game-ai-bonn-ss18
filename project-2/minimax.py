@@ -106,10 +106,12 @@ if __name__ == '__main__':
   modified_game_2_result_next_move = [n for n in level_1_nodes if n.utility.mini == modified_game_2_result.mini]
 
   if len(modified_game_2_result_next_move) > 1:
-    modified_game_2_result_next_move = [n for n in modified_game_2_result_next_move if n.utility.maxi == modified_game_2_result.maxi]
+    modified_game_2_result_next_move.sort(key=lambda x: x.utility.maxi, reverse=True)
+    modified_game_2_result_next_move = [n for n in modified_game_2_result_next_move if n.utility.maxi == modified_game_2_result_next_move[0].utility.maxi]
 
   if len(modified_game_2_result_next_move) > 1:
-    modified_game_2_result_next_move = [n for n in modified_game_2_result_next_move if n.utility.avgi == modified_game_2_result.avgi]
+    modified_game_2_result_next_move.sort(key=lambda x: x.utility.avgi, reverse=True)
+    modified_game_2_result_next_move = [n for n in modified_game_2_result_next_move if n.utility.avgi == modified_game_2_result_next_move[0].utility.avgi]
 
-  print "Modified Game 2 result: " + str(modified_game_2_result) + ", Next move is: " + modified_game_2_result_next_move[0].name
+  print "Modified Game 2 result: " + str(modified_game_2_result.mini) + ", Next move is: " + modified_game_2_result_next_move[0].name
 

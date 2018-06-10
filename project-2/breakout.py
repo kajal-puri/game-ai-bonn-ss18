@@ -54,7 +54,7 @@ class Ball(pygame.sprite.Sprite):
 
   # Speed in pixels per cycle
   speed = 10.0
-  acceleration = 0.0005
+  acceleration = 0.005
 
   # Floating point representation of where the ball is
   x = 0.0
@@ -220,7 +220,7 @@ game_over = False
  
 # Exit the program?
 exit_program = False
- 
+
 # Main program loop
 while not exit_program:
  
