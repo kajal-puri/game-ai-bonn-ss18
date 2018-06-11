@@ -20,7 +20,7 @@ if __name__ == '__main__':
     fig = plt.figure('1')
     plt.axis('equal')
 
-    fig.patch.set_facecolor('beige')
+    # fig.patch.set_facecolor('beige')
     g.remove_nodes_from(walls)
     
     nodes = nx.draw_networkx_nodes(g, pos=pos, node_size=30, with_labels=False, node_color='w')
