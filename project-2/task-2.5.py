@@ -9,6 +9,9 @@ if __name__ == '__main__':
     g = nx.grid_2d_graph(mat.shape[0], mat.shape[1])
     pos = dict((n, n) for n in g.nodes())
 
+    for x, y in g.edges():
+        g[x][y]['weight'] = 1.0
+
     walls = []
     for ix, iy in np.ndindex(mat.shape):
         if mat[ix, iy] == 1:
@@ -25,7 +28,7 @@ if __name__ == '__main__':
     nodes.set_edgecolor('black')
     
     s = (10, 1)[::-1]
-    v = (4, 15)[::-1]
+    v = (2, 15)[::-1]
     path = nx.dijkstra_path(g, s, v)
     path_edges = zip(path,path[1:])
 
