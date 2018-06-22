@@ -38,35 +38,35 @@ def set_parent(node, parent, cost):
     par_dict[node] = parent
 
 def calculate_dijkstra(g, s, v):
-    visited_dict = {}
-    cost_dict = {}
-    par_dict = {}
     q = []
     q.append(s)
     set_parent(s, s, 0)
 
-
+    
     while(len(q) != 0):
         min = get_minimum(q)
         parent = q[min[1]]
-
-        if (parent == v):
-            break;
+        q.remove(parent)
         
+        if (parent == v):
+            print 'reached'
+            break;
+
+        # print 'ch1'
         visited_dict[parent] = True
         cost = get_cost(parent)
-        neighbors = nx.all_neighbors(g, parent)
-
+        # print 'ch2'
+        neighbors = nx.neighbors(g, parent)
+        # print 'ch3'
         for neighbor in neighbors:
             if visited_dict.has_key(neighbor) == False:
                 c = get_cost(neighbor)
                 if c > cost + 1:
                     set_parent(neighbor, parent, cost + 1)
-                
-                q.append(neighbor)
-            
-        q.remove(parent)
-    
+                    q.append(neighbor)
+        # print 'ch4'
+        # print cost_dict
+        # print visited_dict
     
 def dijkstra_path(g, s, v):
     calculate_dijkstra(g, s, v)
@@ -86,26 +86,19 @@ if __name__ == '__main__':
     for x, y in g.edges():
         g[x][y]['weight'] = 1.0
 
+    # remove walls from the graph
     walls = []
     for ix, iy in np.ndindex(mat.shape):
         if mat[ix, iy] == 1:
             walls.append((ix, iy))
     walls = dict([(n, n) for n in walls])
-
-    s = (1, 10)[::-1]
-    v = (7, 3)[::-1]
-    # path2 = dijkstra_path(g, s, v)
-
-    # print path2
-
+    g.remove_nodes_from(walls)
 
     # set plot settings
     fig = plt.figure('1')
     plt.axis('equal')
     fig.patch.set_facecolor('beige')
 
-    # remove walls from the graph
-    g.remove_nodes_from(walls)
 
     # draw nodes and their connecting edges
     nodes = nx.draw_networkx_nodes(g, pos=pos, node_size=30, with_labels=False, node_color='w')
@@ -113,10 +106,10 @@ if __name__ == '__main__':
     edges = nx.draw_networkx_edges(g, pos=pos, node_size=30, with_labels=False, edge_color='r')
 
     # calculate the shortest path between some arbitrary points s and v with dijkstra algorithm
-    s = (10, 1)[::-1]
-    v = (2, 15)[::-1]
-    path = nx.dijkstra_path(g, s, v)
-    path2 = dijkstra_path(g, s, v)
+    s = (1, 10)
+    v = (15, 4)
+    # path = nx.dijkstra_path(g, s, v)
+    path = dijkstra_path(g, s, v)
     path_edges = zip(path, path[1:])
 
     # highlight the start point
@@ -127,5 +120,5 @@ if __name__ == '__main__':
     nx.draw_networkx_edges(g, pos, edgelist=path_edges, edge_color='mediumaquamarine', width=5)
 
     # hide the axes and show the plot
-    # plt.axis('off')
-    # plt.show()
+    plt.axis('off')
+    plt.show()
