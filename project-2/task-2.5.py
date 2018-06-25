@@ -47,10 +47,10 @@ def calculate_dijkstra(g, s, v):
         min = get_minimum(q)
         parent = q[min[1]]
         q.remove(parent)
-        
-        if (parent == v):
-            print 'reached'
-            break;
+
+        ## if we need to calc the whole tree
+        # if (parent == v):
+        #     break;
 
         # print 'ch1'
         visited_dict[parent] = True
@@ -97,19 +97,18 @@ if __name__ == '__main__':
     # set plot settings
     fig = plt.figure('1')
     plt.axis('equal')
-    fig.patch.set_facecolor('beige')
-
+    # fig.patch.set_facecolor('beige')
 
     # draw nodes and their connecting edges
     nodes = nx.draw_networkx_nodes(g, pos=pos, node_size=30, with_labels=False, node_color='w')
     nodes.set_edgecolor('black')
-    edges = nx.draw_networkx_edges(g, pos=pos, node_size=30, with_labels=False, edge_color='r')
+    edges = nx.draw_networkx_edges(g, pos=pos, node_size=30, with_labels=False, edge_color='r', arrows=True)
 
     # calculate the shortest path between some arbitrary points s and v with dijkstra algorithm
     s = (1, 10)
     v = (15, 4)
-    # path = nx.dijkstra_path(g, s, v)
-    path = dijkstra_path(g, s, v)
+    path = nx.dijkstra_path(g, s, v)
+    # path = dijkstra_path(g, s, v)
     path_edges = zip(path, path[1:])
 
     # highlight the start point
@@ -117,8 +116,17 @@ if __name__ == '__main__':
     # highlight the end point
     nx.draw_networkx_nodes(g, pos, nodelist=[v], node_color='orangered', node_size=80)
     # draw the shortest-path on the graph
-    nx.draw_networkx_edges(g, pos, edgelist=path_edges, edge_color='mediumaquamarine', width=5)
+    nx.draw_networkx_edges(g, pos, edgelist=path_edges, edge_color='mediumaquamarine', width=5, arrows=True)
+
+    # costs = np.zeros((20, 20))
+    # for i in range(20):
+    #     for j in range(20):
+    #         if (g.has_node((i, j))):
+    #             costs[i, j] = cost_dict[i, j]
 
     # hide the axes and show the plot
     plt.axis('off')
+    
+    plt.figure('2')
+    # plt.matshow(np.flip(costs, 1).T)
     plt.show()
