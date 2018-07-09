@@ -59,7 +59,7 @@ class Ball(pygame.sprite.Sprite):
 
   # Speed in pixels per cycle
   speed = 10.0
-  acceleration = 0.00
+  acceleration = 0.005
 
   # Floating point representation of where the ball is
   x = 0.0
@@ -169,7 +169,6 @@ class Player(pygame.sprite.Sprite):
 
 
 def calculate_membership(position_x=0, position_y=200, plot=False):
-  print position_x, position_y
   # We need the activation of our fuzzy membership functions at these values;
   # position_x and position_y
   distance_level_near = fuzz.interp_membership(distance, distance_near, position_y)
@@ -231,16 +230,17 @@ def calculate_membership(position_x=0, position_y=200, plot=False):
     fig, ax0 = plt.subplots(figsize=(8, 3))
 
     ax0.fill_between(moving_s, moving_s0, moving_s_activation_left_fast, facecolor='b', alpha=0.7)
-    ax0.plot(moving_s, moving_s_left_fast, 'b', linewidth=0.5, linestyle='--', )
+    ax0.plot(moving_s, moving_s_left_fast, 'b', linewidth=0.5, linestyle='--', label='Fast to left')
     ax0.fill_between(moving_s, moving_s0, moving_s_activation_left_slow, facecolor='g', alpha=0.7)
-    ax0.plot(moving_s, moving_s_left_slow, 'g', linewidth=0.5, linestyle='--')
+    ax0.plot(moving_s, moving_s_left_slow, 'g', linewidth=0.5, linestyle='--', label='Slow to left')
     ax0.fill_between(moving_s, moving_s0, moving_s_activation_no_move, facecolor='r', alpha=0.7)
-    ax0.plot(moving_s, moving_s_no_move, 'r', linewidth=0.5, linestyle='--')
+    ax0.plot(moving_s, moving_s_no_move, 'r', linewidth=0.5, linestyle='--', label='No move')
     ax0.fill_between(moving_s, moving_s0, moving_s_activation_right_slow, facecolor='y', alpha=0.7)
-    ax0.plot(moving_s, moving_s_right_slow, 'r', linewidth=0.5, linestyle='--')
+    ax0.plot(moving_s, moving_s_right_slow, 'y', linewidth=0.5, linestyle='--', label='Slow to right')
     ax0.fill_between(moving_s, moving_s0, moving_s_activation_right_fast, facecolor='m', alpha=0.7)
-    ax0.plot(moving_s, moving_s_right_fast, 'r', linewidth=0.5, linestyle='--')
+    ax0.plot(moving_s, moving_s_right_fast, 'm', linewidth=0.5, linestyle='--', label='Fast to right')
     ax0.set_title('Output membership activity')
+    ax0.legend()
 
     # Turn off top/right axes
     for ax in (ax0,):
@@ -273,8 +273,6 @@ def calculate_membership(position_x=0, position_y=200, plot=False):
     plt.tight_layout()
 
     plt.show()
-
-  print velocity
 
   return velocity
 
@@ -342,23 +340,23 @@ exit_program = False
 
 # Generate universe variables
 #   * Distance and position on ranges [0, 600] and [-800, 800]
-#   * Player velocity has a range of [-100, 100]
+#   * Player velocity has a range of [-120, 120]
 distance = np.arange(0, 601, 1)
 position = np.arange(-800, 801, 1)
-moving_s = np.arange(-100, 101, 1)
+moving_s = np.arange(-120, 121, 1)
 
 # Generate fuzzy membership functions
-distance_near = fuzz.trimf(distance, [0, 0, 100])
-distance_mid  = fuzz.trimf(distance, [0, 250, 500])
-distance_far  = fuzz.trimf(distance, [400, 600, 600])
+distance_near = fuzz.trimf(distance, [0, 0, 50])
+distance_mid  = fuzz.trimf(distance, [0, 200, 400])
+distance_far  = fuzz.trimf(distance, [300, 600, 600])
 position_left   = fuzz.trimf(position, [-800, -800, 0])
 position_center = fuzz.trimf(position, [-50, 0, 50])
 position_right  = fuzz.trimf(position, [0, 800, 800])
-moving_s_left_fast  = fuzz.trimf(moving_s, [-100, -100, -40])
+moving_s_left_fast  = fuzz.trimf(moving_s, [-120, -120, -40])
 moving_s_left_slow  = fuzz.trimf(moving_s, [-80, -40, 0])
 moving_s_no_move    = fuzz.trimf(moving_s, [-20, 0 , 20])
 moving_s_right_slow = fuzz.trimf(moving_s, [0, 40, 80])
-moving_s_right_fast = fuzz.trimf(moving_s, [40, 100, 100])
+moving_s_right_fast = fuzz.trimf(moving_s, [40, 120, 120])
 
 # Visualize these universes and membership functions
 fig, (ax0, ax1, ax2) = plt.subplots(nrows=3, figsize=(8, 9))
@@ -396,7 +394,6 @@ plt.show()
 
 # Main program loop
 while not exit_program:
- 
   # Limit to 30 fps
   clock.tick(30)
 
@@ -418,7 +415,7 @@ while not exit_program:
     # Update the player and ball positions
     game_over = ball.update()
     
-    vel = calculate_membership(ball.x - player.rect.x, np.abs(player.rect.y - ball.y))
+    vel = calculate_membership(ball.x - player.rect.x - player.width / 2, np.abs(player.rect.y - ball.y))
     player.update(vel)
     #player.update(ball.x)
 
