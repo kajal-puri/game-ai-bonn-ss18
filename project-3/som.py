@@ -74,7 +74,7 @@ if __name__ == "__main__":
   fig = plt.figure()
   ax = fig.add_subplot(111, projection="3d")
 
-  ax.scatter(data[:, 0], data[:, 1], data[:, 2], c='w', edgecolors='k')
+  # ax.scatter(data[:, 0], data[:, 1], data[:, 2], c='w', edgecolors='k')
 
   ax.set_xlim([150, 1150])
   ax.set_ylim([1800, 2400])
@@ -113,6 +113,9 @@ if __name__ == "__main__":
   graph, updateGraphs = SOM(data, weights, indices, learning_rate)
 
   activities = np.diff(data, axis=0)
+  aa = activities
+  print activities
+  
   kmeans = KMeans(n_clusters=n_vertices).fit(activities)
   activities = kmeans.labels_
 
@@ -136,25 +139,31 @@ if __name__ == "__main__":
     p[state][activity] += 1
 
   # p *= 1.0 / data.shape[0]
-
   # normalize
   for i in range(len(p)):
     p[i] = p[i] / np.sum(p[i])
 
+
+  
+
   index = np.random.choice(np.arange(data.shape[0]), 1)[0]
   x = data[index]
   points = []
-  for i in range(index, len(data)):
+  for i in range(index, len(data) - 1):
     state = states[i]
-    a = kmeans.cluster_centers_[np.argmax(p[state,:] / np.sum(p, axis=1)[state] )]
-    x = x + a
-    points.append(x)
+
+    
+    probs = np.copy(p[state,:])
+    prev_probs = np.copy(p[states[i - 1],:])
+    a = kmeans.cluster_centers_[np.argmax(probs)] 
+    x = data[i] + a
+    points.append(np.copy(x))
 
   points = np.array(points)
 
   trPoint, = ax.plot(
     [data[index][0]], [data[index][1]], [data[index][2]], marker = 'o',
-    markerfacecolor='b', markeredgecolor='b', color='b', 
+    markerfacecolor='b', markeredgecolor='b', color='b',
   )
   
   ax.scatter(points[:, 0], points[:, 1], points[:, 2], c='g', edgecolors='w')
